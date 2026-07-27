@@ -2,15 +2,10 @@
 evaluation.py
 
 The actual evaluation harness logic: runs our real test_set.json through
-the live RAG pipeline and scores three separate dimensions. This is what
-turns the project from "a RAG app" into "a RAG EVALUATION harness."
+the live RAG pipeline and scores three separate dimensions. 
 
 WHY THREE SEPARATE METRICS, NOT ONE OVERALL "SCORE":
-A single blended score would hide WHICH layer is failing. If retrieval is
-bad but faithfulness looks fine, that's a completely different bug than
-good retrieval with bad faithfulness (model ignoring/misusing correct
-context). Keeping them separate makes the report actually diagnostic,
-not just a pass/fail badge.
+A single blended score would hide Which lAYER is failing. 
 """
 
 import json
@@ -43,16 +38,7 @@ def load_test_set():
 
 
 def check_retrieval(expected_source, retrieved_sources: list[str]) -> bool | None:
-    """
-    Did retrieval actually surface the expected source file(s)?
-
-    WHY THIS RETURNS None SOMETIMES (not just True/False):
-    For no_answer_in_corpus questions, expected_source is None by design -
-    there IS no correct source to check retrieval against. Returning None
-    (rather than forcing a True/False) lets our aggregation step correctly
-    EXCLUDE these questions from the retrieval-accuracy metric, instead of
-    silently miscounting them as retrieval failures.
-    """
+    
     if expected_source is None:
         return None
 
@@ -65,15 +51,10 @@ def check_retrieval(expected_source, retrieved_sources: list[str]) -> bool | Non
 
 def check_abstention(category: str, answer: str) -> bool | None:
     """
-    For no_answer_in_corpus questions specifically: did the system say it
+    Checking For no_answer_in_corpus questions specifically: did the system say it
     doesn't know, instead of confidently hallucinating an answer?
 
-    WHY WE CHECK FOR THE EXACT PHRASE our own prompt specifies:
-    Our SYSTEM_PROMPT in retrieval.py explicitly instructs the model to
-    say "Not found in the provided context." when it can't answer. So
-    checking for that phrase here isn't a lucky guess - it's verifying the
-    model actually followed OUR OWN instruction, which is exactly the
-    behavior we engineered for and need to confirm is actually happening.
+
     """
     if category != "no_answer_in_corpus":
         return None  # not applicable to this question
@@ -81,12 +62,7 @@ def check_abstention(category: str, answer: str) -> bool | None:
     return "not found in the provided context" in answer.lower()
 
 
-# WHY THIS EXACT JUDGE PROMPT DESIGN:
-# We ask for STRICT JSON output (not free-form text) so we can reliably
-# parse the judge's verdict in code, rather than trying to regex-guess
-# what a free-form judge response "meant." Forcing structured output is a
-# common, important pattern when using an LLM as a programmatic component
-# rather than a chat partner.
+
 FAITHFULNESS_JUDGE_PROMPT = """You are a strict fact-checker. You will be given a QUESTION, some CONTEXT that was retrieved for it, and an ANSWER that was generated.
 
 Your job: determine if the ANSWER is fully supported by the CONTEXT. The answer should not contain any claim that isn't backed by the context.
@@ -108,10 +84,11 @@ def judge_faithfulness(client, question: str, answer: str, retrieved_chunks: lis
     """
     Uses Gemini itself as a judge to check whether the generated answer is
     actually supported by the retrieved context - NOT compared against our
-    ground-truth answer key, but against what was actually retrieved. This
-    distinction matters: it catches generation drifting/hallucinating even
+    ground truth answer key, but against what was actually retrieved.
+    it catches generation drifting/hallucinating even
     when retrieval itself succeeded.
     """
+    
     context_text = "\n\n---\n\n".join(c["text"] for c in retrieved_chunks)
 
     prompt = FAITHFULNESS_JUDGE_PROMPT.format(
@@ -128,9 +105,7 @@ def judge_faithfulness(client, question: str, answer: str, retrieved_chunks: lis
         return response.text
 
 
-   # Same bucket as retrieval.py's generate_answer - BOTH use
-    # gemini-3.5-flash and share the same 5 RPM limit, so they must be
-    # paced together under one shared "generation" bucket, not separately.
+  
     raw_text = call_with_retry(do_call, bucket="generation", min_interval_seconds=13).strip()
 
     first_brace = raw_text.find("{")
@@ -151,7 +126,7 @@ def run_evaluation() -> dict:
     """
     Runs every question in test_set.json through the live pipeline.
     Resumable: saves progress after every question, and skips any
-    question already completed in a previous run - so a quota limit
+    question already completed in a previous run so a quota limit
     only costs you the remaining questions, not a full restart.
     """
     client = get_client()
