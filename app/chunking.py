@@ -72,12 +72,8 @@ def split_long_section(text: str) -> list[str]:
     If a section is longer than MAX_TOKENS, split it further by paragraphs,
     accumulating paragraphs into chunks up to the limit, with OVERLAP_TOKENS
     of the previous chunk's tail carried into the next chunk.
-
-    WHY paragraph-level (not sentence or fixed-character): paragraphs are
-    still a natural unit of meaning - splitting mid-paragraph is more likely
-    to separate a claim from its supporting detail than splitting between
-    paragraphs.
     """
+    
     if count_tokens(text) <= MAX_TOKENS:
         return [text]
 
