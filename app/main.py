@@ -1,27 +1,13 @@
 """
 main.py
 
-The FastAPI application - this is what turns our collection of scripts
+The FastAPI application -  turns our collection of scripts
 (chunking.py, embedding.py, retrieval.py) into an actual running web
 service that anything (a browser, curl, another program, eventually our
 own evaluation harness) can send HTTP requests to.
 
-WHY WE NEED THIS FILE, SPECIFICALLY:
-Everything so far has been "run this Python file directly from the
-terminal." That's fine for building and testing piece by piece, but it's
-not how a real system gets used - nobody wants to SSH into a server and
-run a script by hand every time someone asks a question. FastAPI exposes
-our functions as HTTP endpoints, so a request comes in, gets routed to the
-right function, and a response goes out - the standard shape of basically
-every web API you've ever used.
 
-WHY Pydantic MODELS FOR REQUEST/RESPONSE (not just raw dicts):
-Pydantic (which FastAPI uses internally) validates incoming data
-automatically. If someone sends a request missing the "question" field,
-or sends a number instead of a string, FastAPI rejects it with a clear
-422 error BEFORE our code even runs - we don't have to write manual
-"if 'question' not in request" checks ourselves. This is a big part of
-why FastAPI pairs so naturally with Pydantic.
+Pydantic MODELS FOR REQUEST/RESPONSE (not just raw dicts):
 """
 
 from fastapi import FastAPI, HTTPException
@@ -38,12 +24,7 @@ app = FastAPI(
 )
 
 
-# --- Request/response schemas ---
-# WHY DEFINE THESE EXPLICITLY (instead of accepting/returning raw dicts):
-# This is "the contract" of our API - anyone reading this code (or hitting
-# the auto-generated /docs page FastAPI builds for us) can see exactly
-# what shape of data each endpoint expects and returns, without having to
-# read the function body.
+
 
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1, description="The question to ask the RAG system")
@@ -119,10 +100,7 @@ def evaluate():
     retrieval accuracy, faithfulness (LLM-as-judge), and abstention
     correctness on unanswerable questions.
 
-    Note: this endpoint makes ~2 API calls per question (one generation
-    call, one judge call), so a full run takes several minutes. In a
-    production deployment this would run asynchronously as a background
-    job rather than a blocking request.
+     endpoint makes ~2 API calls per question
     """
     try:
         report = run_evaluation()
