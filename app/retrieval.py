@@ -1,25 +1,14 @@
 """
 retrieval.py
 
-The core RAG query pipeline: given a question, find the most relevant
+ RAG query pipeline: given a question, find the most relevant
 stored chunks, then ask Gemini to answer using ONLY that retrieved context.
 
-WHY THIS FILE EXISTS:
-embedding.py built the knowledge base (chunks -> vectors -> stored in
-Chroma). This file is what actually USES that knowledge base to answer a
-question - the "retrieval" and "generation" halves of Retrieval-Augmented
-Generation.
-
-THE TWO-STEP FLOW, AND WHY BOTH STEPS MATTER:
 1. RETRIEVE: embed the incoming question the same way we embedded the
    chunks, then ask Chroma for the top-k stored vectors closest to it.
-   This is a similarity search in "meaning space" - not a keyword match.
+   
 2. GENERATE: hand those retrieved chunks to Gemini along with the question,
-   and explicitly instruct it to answer ONLY from the provided text. This
-   is the step that turns "here are some possibly-relevant paragraphs"
-   into an actual natural-language answer - but it's also the step where
-   hallucination risk lives, which is exactly why Step 5 (evaluation) will
-   scrutinize this output separately from retrieval quality.
+   and explicitly instruct it to answer ONLY from the provided text.
 """
 
 import os
@@ -34,15 +23,7 @@ load_dotenv()
 
 GENERATION_MODEL = "gemini-3.5-flash"
 
-# WHY THIS EXACT PROMPT WORDING MATTERS:
-# The instruction to explicitly say "not found in the provided context" is
-# the single most important line in this whole file for reducing
-# hallucination. Without it, the model defaults to its own trained
-# knowledge to "be helpful" when the retrieved context doesn't fully
-# answer the question - which is exactly the failure mode our
-# no_answer_in_corpus test questions are designed to catch. This one
-# instruction is a large part of what separates "a chatbot that happens to
-# have some context" from an actual grounded RAG system.
+
 SYSTEM_PROMPT = """You are answering questions using ONLY the provided context below.
 
 Rules:
@@ -55,15 +36,12 @@ Rules:
 
 def retrieve(client, question: str, top_k: int = 5) -> list[dict]:
     """
-    Embeds the question and returns the top_k closest stored chunks from
-    Chroma, along with their metadata and similarity distance.
-
+   
     WHY top_k=5 (not 1, not 10): a single chunk (top_k=1) risks missing the
     answer if it's split awkwardly across two chunks despite our overlap
     handling. Too many chunks (top_k=10) dilutes the context the LLM sees
     with less-relevant material, increasing both cost and hallucination
-    risk (more irrelevant text = more chances for it to latch onto the
-    wrong thing). 3 is a reasonable middle ground for a corpus this size.
+    risk..
     """
     chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
     collection = chroma_client.get_collection(COLLECTION_NAME)
@@ -133,8 +111,7 @@ def answer_question(question: str, top_k: int = 5) -> dict:
 
 
 if __name__ == "__main__":
-    # Manual sanity check - ask it something we know the corpus can answer,
-    # and something we know it can't, and eyeball both results.
+    
     print("=== Test 1: should be answerable ===")
     client = get_client()
     chunks = retrieve(client, "What algorithm does FastAPI recommend for signing a JWT?", top_k=5)
