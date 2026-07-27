@@ -70,9 +70,7 @@ def generate_answer(client, question: str, retrieved_chunks: list[dict]) -> str:
     Sends the question + retrieved chunks to Gemini's generation model,
     instructed to answer strictly from the provided context.
     """
-    # We label each chunk with its source in the prompt itself - this lets
-    # the model (and later, us) see exactly which file each piece of
-    # context came from, supporting traceability/citations.
+    
     context_blocks = []
     for chunk in retrieved_chunks:
         source = chunk["metadata"]["source_file"]
