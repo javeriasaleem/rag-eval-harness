@@ -1,15 +1,7 @@
 """
 api_utils.py
 
-Shared retry logic for Gemini API calls.
-
-WHY WE EXTRACTED THIS INTO ITS OWN SHARED FUNCTION:
-We originally wrote retry logic once, inline, inside embed_texts() in
-embedding.py - it only handled 429 RESOURCE_EXHAUSTED. Since then we've
-extended it to also handle 503 UNAVAILABLE, network-level errors, and
-now PROACTIVE PACING - because Google AI Studio's usage dashboard
-revealed the free tier allows only 5 requests/minute for our generation
-model, far tighter than we assumed.
+Shared retry logic for Gemini API calls..
 
 """
 
