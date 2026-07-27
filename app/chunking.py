@@ -10,45 +10,19 @@ shouldn't have to compete with, or be diluted by, an entire multi-page
 document. We split each doc into focused pieces so retrieval can find the
 *specific* paragraph that answers a question.
 
-STRATEGY:
-1. Split along markdown headers first (## Section Title) - each section is
-   already a human-authored, self-contained unit of meaning. This respects
-   the document's own structure instead of chopping blindly.
-2. If a section is still too long (over MAX_TOKENS), split it further by
-   paragraphs, with a small token OVERLAP between consecutive chunks so an
-   idea that spans a split point isn't orphaned in a way that makes it
-   unretrievable.
-3. Every chunk keeps metadata: which file, which library, which section
-   title it came from - this is what lets us check retrieval accuracy
-   against our ground truth later, and show citations to the user.
 """
 
 import os
 import re
 
 # Why these numbers specifically:
-# - 300 tokens is roughly one focused paragraph or two - small enough that
-#   a retrieved chunk is almost entirely relevant to a matching question,
-#   large enough to still contain a complete thought/code example.
-# - 50 tokens of overlap (~15%) is enough to catch a sentence that spans a
-#   split boundary, without bloating storage with heavy duplication.
+# - 300 tokens is roughly one focused paragraph or two 
+# - 50 tokens of overlap (~15%) is enough to catch a sentence, without bloating storage with heavy duplication.
+
 MAX_TOKENS = 300
 OVERLAP_TOKENS = 50
 
-# NOTE ON TOKEN COUNTING:
-# We originally used OpenAI's `tiktoken` library here, but it downloads its
-# encoding tables from a third-party URL on first use - which failed in this
-# sandboxed environment, and more importantly means the whole ingestion
-# pipeline would depend on a live connection to a server that has nothing to
-# do with our actual stack, just to count tokens. That's a fragile, unusual
-# dependency for something this basic.
-#
-# Instead we use a simple, offline approximation: English text averages
-# roughly 0.75 words per token (i.e. ~1.3 tokens per word) for common LLM
-# tokenizers, including Gemini's. This is not exact, but for a *chunk-sizing*
-# decision we don't need exact - we need "roughly the right ballpark so
-# chunks aren't too big or too small," and this gets us there without any
-# external dependency.
+
 _TOKENS_PER_WORD = 1.3
 
 
