@@ -1,5 +1,5 @@
 """
-debug_rank.py - one-off diagnostic, not part of the final project.
+debug_rank.py - not part of the final project.
 
 Checks where the chunk containing "HS256" actually ranks among ALL 436
 stored chunks for our test question - not just whether it made the top 3.
