@@ -1,0 +1,17 @@
+# Virtual environment
+.venv/
+
+# Environment variables (contains secrets)
+.env
+
+# macOS system files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+
+
+# Generated evaluation output
+evaluation_progress.json

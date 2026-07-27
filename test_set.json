@@ -1,0 +1,186 @@
+[
+  {
+    "id": "q01",
+    "question": "How do you add a background task to run after a response in FastAPI?",
+    "category": "straightforward",
+    "expected_source": "fastapi/background-tasks.md",
+    "expected_answer_contains": ["BackgroundTasks", "add_task"]
+  },
+  {
+    "id": "q02",
+    "question": "How do you attach a background task to a response in Starlette directly?",
+    "category": "distractor_pair",
+    "distractor_pair_with": "q01",
+    "expected_source": "starlette/background.md",
+    "expected_answer_contains": ["BackgroundTask", "background="]
+  },
+  {
+    "id": "q03",
+    "question": "What HTTP exception class do you raise in a FastAPI path operation to return an error response?",
+    "category": "straightforward",
+    "expected_source": "fastapi/handling-errors.md",
+    "expected_answer_contains": ["HTTPException"]
+  },
+  {
+    "id": "q04",
+    "question": "In Pydantic, how do you enforce that a field's value must not be coerced from another type (e.g. a string can't become an int)?",
+    "category": "straightforward",
+    "expected_source": "pydantic/strict_mode.md",
+    "expected_answer_contains": ["strict mode", "Strict"]
+  },
+  {
+    "id": "q05",
+    "question": "How do you set a maximum character length on a query parameter in FastAPI?",
+    "category": "straightforward",
+    "expected_source": "fastapi/query-params-validation.md",
+    "expected_answer_contains": ["Query", "max_length"]
+  },
+  {
+    "id": "q06",
+    "question": "What algorithm does the FastAPI security tutorial recommend for signing a JWT access token?",
+    "category": "exact_fact",
+    "expected_source": "fastapi/security-oauth2-jwt.md",
+    "expected_answer_contains": ["HS256"]
+  },
+  {
+    "id": "q07",
+    "question": "What does FastAPI do with the results of a dependency that is used more than once in the same request?",
+    "category": "exact_fact",
+    "expected_source": "fastapi/sub-dependencies.md",
+    "expected_answer_contains": ["cache", "once per request"]
+  },
+  {
+    "id": "q08",
+    "question": "How can a FastAPI dependency run cleanup code after the response has been sent?",
+    "category": "straightforward",
+    "expected_source": "fastapi/dependencies-with-yield.md",
+    "expected_answer_contains": ["yield"]
+  },
+  {
+    "id": "q09",
+    "question": "How do you make a Pydantic model field required while still attaching extra Field() metadata to it?",
+    "category": "exact_fact",
+    "expected_source": "pydantic/fields.md",
+    "expected_answer_contains": ["Field", "ellipsis", "..."]
+  },
+  {
+    "id": "q10",
+    "question": "How do you configure CORS to allow requests from a specific frontend origin in FastAPI?",
+    "category": "straightforward",
+    "expected_source": "fastapi/cors.md",
+    "expected_answer_contains": ["CORSMiddleware", "allow_origins"]
+  },
+  {
+    "id": "q11",
+    "question": "What is the recommended way to configure how quantum entanglement affects request routing in FastAPI?",
+    "category": "no_answer_in_corpus",
+    "expected_source": null,
+    "expected_answer_contains": null,
+    "note": "Nonsense/unanswerable question; correct behavior is to say the corpus does not cover this."
+  },
+  {
+    "id": "q12",
+    "question": "What database migration tool does FastAPI officially bundle for schema changes?",
+    "category": "no_answer_in_corpus",
+    "expected_source": null,
+    "expected_answer_contains": null,
+    "note": "FastAPI does not bundle a migration tool; this is not covered in the corpus and the model should not invent one like Alembic."
+  },
+  {
+    "id": "q13",
+    "question": "How do you make my API wait for something before responding, using dependencies?",
+    "category": "ambiguous_phrasing",
+    "expected_source": "fastapi/dependencies-intro.md",
+    "expected_answer_contains": ["Depends"],
+    "note": "Vague phrasing - could be confused with async/await docs, but the corpus's relevant section is dependencies, not background tasks."
+  },
+  {
+    "id": "q14",
+    "question": "How do I add middleware that runs code before and after every request?",
+    "category": "distractor_pair",
+    "distractor_pair_with": "q15",
+    "expected_source": "fastapi/middleware.md",
+    "expected_answer_contains": ["@app.middleware", "call_next"]
+  },
+  {
+    "id": "q15",
+    "question": "How do you add ASGI middleware to a Starlette application using the Middleware class?",
+    "category": "distractor_pair",
+    "distractor_pair_with": "q14",
+    "expected_source": "starlette/middleware.md",
+    "expected_answer_contains": ["Middleware", "add_middleware"]
+  },
+  {
+    "id": "q16",
+    "question": "How do you customize how a Pydantic model is converted into a dictionary or JSON?",
+    "category": "straightforward",
+    "expected_source": "pydantic/serialization.md",
+    "expected_answer_contains": ["model_dump", "serializ"]
+  },
+  {
+    "id": "q17",
+    "question": "How do you handle a WebSocket connection in Starlette?",
+    "category": "straightforward",
+    "expected_source": "starlette/websockets.md",
+    "expected_answer_contains": ["WebSocket", "accept"]
+  },
+  {
+    "id": "q18",
+    "question": "How do you write a custom validator function for a Pydantic field?",
+    "category": "straightforward",
+    "expected_source": "pydantic/validators.md",
+    "expected_answer_contains": ["field_validator"]
+  },
+  {
+    "id": "q19",
+    "question": "How do you declare a required path parameter with a type in FastAPI?",
+    "category": "straightforward",
+    "expected_source": "fastapi/path-params.md",
+    "expected_answer_contains": ["path parameter", "type"]
+  },
+  {
+    "id": "q20",
+    "question": "What class do you use in Starlette to raise a custom HTTP error, and how does that differ from FastAPI's approach?",
+    "category": "multi_hop",
+    "expected_source": ["starlette/exceptions.md", "fastapi/handling-errors.md"],
+    "expected_answer_contains": ["HTTPException"],
+    "note": "Requires combining info from both the Starlette and FastAPI docs - both have an HTTPException, subtly different."
+  },
+  {
+    "id": "q21",
+    "question": "How do you define a class-based dependency in FastAPI instead of a function-based one?",
+    "category": "straightforward",
+    "expected_source": "fastapi/dependencies-intro.md",
+    "expected_answer_contains": ["class"]
+  },
+  {
+    "id": "q22",
+    "question": "Can Pydantic fields have dependencies on other fields the way FastAPI path operations can depend on other functions?",
+    "category": "ambiguous_phrasing",
+    "expected_source": null,
+    "expected_answer_contains": null,
+    "note": "Deliberately confusing question that mixes FastAPI's 'Depends' concept with Pydantic fields, which don't have an equivalent dependency-injection concept - tests whether the system incorrectly conflates the two libraries."
+  },
+  {
+    "id": "q23",
+    "question": "How do you globally configure a Pydantic model to forbid extra fields not defined on the model?",
+    "category": "exact_fact",
+    "expected_source": "pydantic/config.md",
+    "expected_answer_contains": ["extra", "forbid"]
+  },
+  {
+    "id": "q24",
+    "question": "How does Starlette let you build URL routes for an application?",
+    "category": "straightforward",
+    "expected_source": "starlette/routing.md",
+    "expected_answer_contains": ["Route", "routes="]
+  },
+  {
+    "id": "q25",
+    "question": "How do you return a plain JSON response manually in Starlette, and how does that compare to FastAPI's default response handling?",
+    "category": "multi_hop",
+    "expected_source": ["starlette/responses.md", "fastapi/path-params.md"],
+    "expected_answer_contains": ["JSONResponse"],
+    "note": "Tests whether the system can note that FastAPI auto-converts return values while Starlette requires explicit JSONResponse."
+  }
+]
